@@ -4,19 +4,15 @@
 #include <functional>
 #include <unordered_map>
 #include <cstdint>
-#include "Log/Log.h"
-
-using namespace LifeExe;
-
-DEFINE_LOG_CATEGORY_STATIC(LogEvent);
+#include "Core/Types.h"
 
 namespace LifeExe
 {
 
 struct EventHandle
 {
-    uint64_t value{};
-    constexpr explicit EventHandle(uint64_t id = 0) : value(id) {}
+    uint64 value{};
+    constexpr explicit EventHandle(uint64 id = 0) : value(id) {}
     constexpr auto operator<=>(const EventHandle&) const = default;
 };
 
@@ -51,7 +47,7 @@ public:
 
 private:
     std::unordered_map<EventHandle, Delegate> m_delegates;
-    uint64_t m_nextHandleId{1};
+    uint64 m_nextHandleId{1};
 };
 
 }  // namespace LifeExe
@@ -63,7 +59,7 @@ struct hash<LifeExe::EventHandle>
 {
     size_t operator()(const LifeExe::EventHandle& id) const noexcept  //
     {
-        return std::hash<uint64_t>{}(id.value);
+        return std::hash<LifeExe::uint64>{}(id.value);
     }
 };
 }  // namespace std

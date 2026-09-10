@@ -2,6 +2,7 @@
 #include <format>
 #include "Log/Log.h"
 #include "Window/IWindowManager.h"
+#include "Event/InputEventFormat.h"
 
 using namespace LifeExe;
 
@@ -48,22 +49,28 @@ void Engine::run()
 void Engine::onWindowEvent(const InputEvent& event)
 {
     //  LE_LOG(LogGLFWWindow, Display, "Mouse button:{}, action:{}", button, action);
-    //  LE_LOG(LogGLFWWindow, Display, "Key={}, scancode={}", key, scancode);
-
-    if (auto* data = std::get_if<MouseScrollEventData>(&event.data))
+    if (auto* data = std::get_if<KeyEventData>(&event.data))
     {
-        LE_LOG(LogEngine, Display, "Mouse scroll: xoffset={},yoffset={}", data->xOffset, data->yOffset);
+        LE_LOG(LogEngine, Display, "Key: key={}, action={}, scancode={}", data->key, data->action, data->scancode);
+    }
+    else if (auto* data = std::get_if<MouseButtonEventData>(&event.data))
+    {
+        LE_LOG(LogEngine, Display, "Mouse button: button={}, action={}", data->button, data->action);
+    }
+    else if (auto* data = std::get_if<MouseScrollEventData>(&event.data))
+    {
+        LE_LOG(LogEngine, Display, "Mouse scroll: xoffset={}, yoffset={}", data->xOffset, data->yOffset);
     }
     else if (auto* data = std::get_if<MouseMoveEventData>(&event.data))
     {
-        LE_LOG(LogEngine, Display, "Mouse position:  x={}, y={}", data->x, data->y);
+        //  LE_LOG(LogEngine, Display, "Mouse position:  x={}, y={}", data->x, data->y);
     }
     else if (auto* data = std::get_if<WindowResizeEventData>(&event.data))
     {
         LE_LOG(LogEngine, Display, "Resize: width={}, height={}", data->width, data->height);
     }
-    else if (auto* data = std::get_if<WindowCloseEventData>(&event.data))
+    else if (std::get_if<WindowCloseEventData>(&event.data))
     {
-        LE_LOG(LogEngine, Display, "Window with id={} closed!", data->id);
+        LE_LOG(LogEngine, Display, "Window with id={} closed!", event.windowId.value);
     }
 }

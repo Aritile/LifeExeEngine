@@ -2,6 +2,7 @@
 #include <string>
 #include <functional>
 #include "Window/IWindow.h"
+#include "Window/WindowId.h"
 #include "Core/Utility.h"
 #include "Event/Event.h"
 #include "Event/InputEvent.h"

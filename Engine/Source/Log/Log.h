@@ -8,11 +8,12 @@
 #include <format>
 
 #include "Core/Utility.h"
+#include "Core/Types.h"
 
 namespace LifeExe
 {
 
-enum class LogVerbosity : uint8_t
+enum class LogVerbosity : uint8
 {
     NoLogging = 0,
     Display,

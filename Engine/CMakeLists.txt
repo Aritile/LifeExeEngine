@@ -15,6 +15,7 @@ set(ENGINE_SOURCES
     Source/Core/Engine.cpp
     Source/Core/Engine.h
     Source/Core/Utility.h
+    Source/Core/Types.h
     .clang-format
     Source/pch.h
     Source/pch.cpp
@@ -23,16 +24,20 @@ set(ENGINE_SOURCES
     Source/Log/Log.h
     Source/Window/IWindow.h
     Source/Window/IWindowManager.h
+    Source/Window/WindowId.h
     Source/Window/GLFW/GLFWWindow.h
     Source/Window/GLFW/GLFWWindow.cpp
     Source/Window/GLFW/GLFWWindowManager.h
     Source/Window/GLFW/GLFWWindowManager.cpp
+    Source/Window/GLFW/GLFWKeyMapper.h
+    Source/Window/GLFW/GLFWKeyMapper.cpp
     Source/Window/WinAPI/WinAPIWindow.h
     Source/Window/WinAPI/WinAPIWindow.cpp
     Source/Window/WinAPI/WinAPIWindowManager.h
     Source/Window/WinAPI/WinAPIWindowManager.cpp
     Source/Event/Event.h
     Source/Event/InputEvent.h
+    Source/Event/InputEventFormat.h
 )
 
 add_library(${PROJECT_NAME}Lib ${ENGINE_SOURCES})
@@ -49,6 +54,7 @@ add_executable(${PROJECT_NAME}TestRunner
     Tests/WindowTests.cpp
     Tests/EventTests.cpp
     Tests/InputEventTests.cpp
+    Tests/GLFWKeyMapperTests.cpp
 )
 find_package(GTest REQUIRED)
 target_link_libraries(${PROJECT_NAME}TestRunner PRIVATE ${PROJECT_NAME}Lib gtest::gtest)
@@ -59,6 +65,7 @@ target_link_libraries(${PROJECT_NAME}Lib PUBLIC spdlog::spdlog)
 
 find_package(glfw3 REQUIRED)
 target_link_libraries(${PROJECT_NAME}Lib PRIVATE glfw)
+target_link_libraries(${PROJECT_NAME}TestRunner PRIVATE glfw)
 
 # folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

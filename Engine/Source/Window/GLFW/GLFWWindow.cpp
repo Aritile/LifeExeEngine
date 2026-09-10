@@ -1,4 +1,5 @@
 #include "GLFWWindow.h"
+#include "Window/GLFW/GLFWKeyMapper.h"
 #include "Log/Log.h"
 #include <GLFW/glfw3.h>
 
@@ -26,10 +27,11 @@ GLFWWindow::GLFWWindow(WindowId id, const WindowSettings& settings)  //
         [](GLFWwindow* window)
         {
             auto* thisWindow = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(window));
+            if (!thisWindow) return;
 
             InputEvent event;
-            event.type = EventType::WindowClose;
-            event.data = WindowCloseEventData{thisWindow->m_id.value};
+            event.windowId = thisWindow->m_id;
+            event.data = WindowCloseEventData{};
             thisWindow->m_windowEvent.invoke(event);
         });
 
@@ -37,9 +39,10 @@ GLFWWindow::GLFWWindow(WindowId id, const WindowSettings& settings)  //
         [](GLFWwindow* window, int width, int height)
         {
             auto* thisWindow = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(window));
+            if (!thisWindow) return;
 
             InputEvent event;
-            event.type = EventType::WindowResize;
+            event.windowId = thisWindow->m_id;
             event.data = WindowResizeEventData{width, height};
             thisWindow->m_windowEvent.invoke(event);
         });
@@ -48,9 +51,14 @@ GLFWWindow::GLFWWindow(WindowId id, const WindowSettings& settings)  //
         [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
             auto* thisWindow = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(window));
+            if (!thisWindow) return;
 
             InputEvent event;
-            event.type = EventType::KeyPress;
+            event.windowId = thisWindow->m_id;
+            event.data = KeyEventData{                      //
+                .key = GLFWKeyMapper::toKey(key),           //
+                .action = GLFWKeyMapper::toAction(action),  //
+                .scancode = scancode};
             thisWindow->m_windowEvent.invoke(event);
         });
 
@@ -58,9 +66,10 @@ GLFWWindow::GLFWWindow(WindowId id, const WindowSettings& settings)  //
         [](GLFWwindow* window, double xpos, double ypos)
         {
             auto* thisWindow = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(window));
+            if (!thisWindow) return;
 
             InputEvent event;
-            event.type = EventType::MouseMove;
+            event.windowId = thisWindow->m_id;
             event.data = MouseMoveEventData{xpos, ypos};
             thisWindow->m_windowEvent.invoke(event);
         });
@@ -69,9 +78,14 @@ GLFWWindow::GLFWWindow(WindowId id, const WindowSettings& settings)  //
         [](GLFWwindow* window, int button, int action, int mods)
         {
             auto* thisWindow = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(window));
+            if (!thisWindow) return;
 
             InputEvent event;
-            event.type = EventType::MouseButton;
+            event.windowId = thisWindow->m_id;
+            event.data = MouseButtonEventData{
+                .button = GLFWKeyMapper::toMouseButton(button),  //
+                .action = GLFWKeyMapper::toAction(action),       //
+            };
             thisWindow->m_windowEvent.invoke(event);
         });
 
@@ -79,9 +93,10 @@ GLFWWindow::GLFWWindow(WindowId id, const WindowSettings& settings)  //
         [](GLFWwindow* window, double xoffset, double yoffset)
         {
             auto* thisWindow = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(window));
+            if (!thisWindow) return;
 
             InputEvent event;
-            event.type = EventType::MouseScroll;
+            event.windowId = thisWindow->m_id;
             event.data = MouseScrollEventData{xoffset, yoffset};
             thisWindow->m_windowEvent.invoke(event);
         });
@@ -91,6 +106,7 @@ GLFWWindow::~GLFWWindow()
 {
     if (m_window)
     {
+        glfwSetWindowUserPointer(m_window, nullptr);
         glfwDestroyWindow(m_window);
         m_window = nullptr;
     }

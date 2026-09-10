@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Window/IWindow.h"
+#include "Window/WindowId.h"
+#include "Core/Types.h"
 #include <memory>
 #include <expected>
 
 namespace LifeExe
 {
 
-enum WindowCreationError
+enum class WindowCreationError : uint8
 {
     ManagerIsNotInitialized,
     CreationFailed
